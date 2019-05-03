@@ -18,11 +18,6 @@ output "subnet_group_id" {
   description = "ID of the Subnet Group"
 }
 
-output "security_group_id" {
-  value       = "${join("", aws_security_group.default.*.id)}"
-  description = "ID of the Security Group"
-}
-
 output "parameter_group_id" {
   value       = "${join("", aws_db_parameter_group.default.*.id)}"
   description = "ID of the Parameter Group"
