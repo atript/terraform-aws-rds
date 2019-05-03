@@ -30,7 +30,7 @@ resource "aws_db_instance" "default" {
   instance_class              = "${var.instance_class}"
   allocated_storage           = "${var.allocated_storage}"
   storage_encrypted           = "${var.storage_encrypted}"
-  vpc_security_group_ids      = ["${join("", aws_security_group.default.*.id)}"]
+  vpc_security_group_ids      = ["${var.security_group_ids}"]
   db_subnet_group_name        = "${join("", aws_db_subnet_group.default.*.name)}"
   parameter_group_name        = "${length(var.parameter_group_name) > 0 ? var.parameter_group_name : join("", aws_db_parameter_group.default.*.name)}"
   option_group_name           = "${length(var.option_group_name) > 0 ? var.option_group_name : join("", aws_db_option_group.default.*.name)}"
@@ -78,29 +78,6 @@ resource "aws_db_subnet_group" "default" {
   name       = "${module.label.id}"
   subnet_ids = ["${var.subnet_ids}"]
   tags       = "${module.label.tags}"
-}
-
-resource "aws_security_group" "default" {
-  count       = "${var.enabled == "true" ? 1 : 0}"
-  name        = "${module.label.id}"
-  description = "Allow inbound traffic from the security groups"
-  vpc_id      = "${var.vpc_id}"
-
-  ingress {
-    from_port       = "${var.database_port}"
-    to_port         = "${var.database_port}"
-    protocol        = "tcp"
-    security_groups = ["${var.security_group_ids}"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = "${module.label.tags}"
 }
 
 module "dns_host_name" {
